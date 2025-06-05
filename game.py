@@ -551,3 +551,120 @@ class Game:
                 # For now, let's assume Spaceship will have an activate_invincibility method or similar.
                 # For this subtask, we'll just add the spaceship.
                 # The plan step for Spaceship.py will handle making it invincible.
+
+# Main Game Execution Block (to be appended to game.py)
+
+if __name__ == '__main__': # Good practice, though PyScript runs it directly
+    pygame.init()
+
+    # Screen dimensions - consider making these configurable or constants at the top
+    SCREEN_WIDTH = 800
+    SCREEN_HEIGHT = 600
+
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption("Earth Invaders")
+
+    # Instantiate the game
+    game = Game(SCREEN_WIDTH, SCREEN_HEIGHT)
+
+    clock = pygame.time.Clock()
+    running = True
+
+    # Attempt to load a default font for score/lives/messages
+    try:
+        ui_font = pygame.font.Font(None, 36) # Default system font, size 36
+        game_over_font = pygame.font.Font(None, 74)
+    except Exception as e:
+        print(f"Warning: Could not load default font. UI text may not be visible. Error: {e}")
+        ui_font = None
+        game_over_font = None
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            # Add other event handling here if needed, e.g., passing events to game objects
+            # Example: game.handle_event(event)
+            # (if your Game class has such a method for specific key presses not handled by player)
+
+        # Game logic updates
+        if not game.game_over:
+            game.spaceship_group.update() # Handles player input and laser recharging
+            game.move_aliens()
+            game.alien_shoot()
+            # Note: aliens_group.update is called by move_aliens in your Game class structure
+            game.super_alien_group.update() # Handles super alien movement
+            game.handle_bomb_dropping()
+            game.bombs_group.update()
+            game.alien_lasers_group.update()
+            game.check_collisions()
+            game.check_hostile_projectile_collisions()
+            game.spawn_super_alien()
+            game.handle_spaceship_respawn()
+            game._check_and_activate_frenzy_mode()
+
+            if game.check_round_clear(): # If all aliens are cleared
+                # Potentially add a delay or message before resetting
+                game.reset_game(new_round_started=True)
+
+
+        game.explosions_group.update() # Update explosions regardless of game_over state
+
+        # Drawing
+        screen.fill((0, 0, 0))  # Black background
+
+        # Draw obstacles
+        for obstacle in game.obstacles:
+            obstacle.blocks_group.draw(screen)
+
+        # Draw spaceship and its lasers
+        if game.spaceship_group.sprite:
+            # Handle blinking during invincibility
+            if not (game.spaceship_group.sprite.invincible and not game.spaceship_group.sprite.blink_on):
+                game.spaceship_group.draw(screen)
+
+            # Draw shield aura if active
+            if game.spaceship_group.sprite.shield_active:
+                aura_surface = game.spaceship_group.sprite.shield_aura_surface
+                aura_rect = aura_surface.get_rect(center=game.spaceship_group.sprite.rect.center)
+                screen.blit(aura_surface, aura_rect)
+
+            game.spaceship_group.sprite.lasers_group.draw(screen)
+
+        # Draw aliens and their lasers
+        game.aliens_group.draw(screen)
+        game.alien_lasers_group.draw(screen)
+
+        # Draw super alien and its bombs
+        game.super_alien_group.draw(screen)
+        game.bombs_group.draw(screen)
+
+        # Draw explosions
+        game.explosions_group.draw(screen)
+
+        # Draw UI (score, lives) if font is available
+        if ui_font:
+            score_text_surface = ui_font.render(f"Score: {game.score}", True, (255, 255, 255))
+            lives_text_surface = ui_font.render(f"Lives: {game.lives}", True, (255, 255, 255))
+            level_text_surface = ui_font.render(f"Level: {game.current_level_number}", True, (255, 255, 255)) # Added level display
+
+            screen.blit(score_text_surface, (10, 10))
+            screen.blit(lives_text_surface, (SCREEN_WIDTH - lives_text_surface.get_width() - 10, 10))
+            screen.blit(level_text_surface, (SCREEN_WIDTH // 2 - level_text_surface.get_width() // 2, 10))
+
+
+        if game.game_over:
+            if game_over_font:
+                game_over_text_surface = game_over_font.render("GAME OVER", True, (255, 0, 0))
+                screen.blit(game_over_text_surface,
+                            (SCREEN_WIDTH // 2 - game_over_text_surface.get_width() // 2,
+                             SCREEN_HEIGHT // 2 - game_over_text_surface.get_height() // 2))
+            # Optionally, add a "Press R to Restart" message here
+            # And handle R key press in event loop to call game.reset_game(new_round_started=False)
+
+        pygame.display.flip()  # Update the full display
+        clock.tick(60)  # Cap FPS at 60
+
+    pygame.quit()
+    # Note: In a PyScript environment, pygame.quit() might not be strictly necessary
+    # or behave the same way as it does in a desktop app, as the browser manages the page lifecycle.
