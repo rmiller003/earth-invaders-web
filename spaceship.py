@@ -18,12 +18,12 @@ class Spaceship(pygame.sprite.Sprite):
         # self.speed_modifier = speed_modifier # Removed speed_modifier store
 
         try:
-            self.image = pygame.image.load("assets/Graphics/spaceship.png").convert_alpha() # Added convert_alpha()
+            self.image = pygame.image.load("Graphics/spaceship.png").convert_alpha() # Added convert_alpha()
         except (pygame.error, FileNotFoundError) as e:
-            print(f"Warning: Could not load 'assets/Graphics/spaceship.png'. Error: {e}. Using placeholder for spaceship.")
+            print(f"Warning: Could not load 'Graphics/spaceship.png'. Error: {e}. Using placeholder for spaceship.")
             self.image = pygame.Surface((50, 50)) # Example placeholder size
             self.image.fill((0, 0, 255)) # Blue placeholder
-
+        
         self.rect = self.image.get_rect(midbottom = (self.screen_width/2, self.screen_height))
         self.speed = SPACESHIP_SPEED # Set to constant integer value
         self.lasers_group = pygame.sprite.Group()
@@ -42,10 +42,10 @@ class Spaceship(pygame.sprite.Sprite):
 
         # Laser sound
         try:
-            self.laser_sound = pygame.mixer.Sound("assets/Sounds/laser.ogg")
+            self.laser_sound = pygame.mixer.Sound("Sounds/laser.ogg")
             self.laser_sound.set_volume(0.9)
         except (pygame.error, FileNotFoundError) as e:
-            print(f"Warning: Could not load 'assets/Sounds/laser.ogg' for spaceship. Error: {e}. Spaceship laser will be silent.")
+            print(f"Warning: Could not load 'Sounds/laser.ogg' for spaceship. Error: {e}. Spaceship laser will be silent.")
             self.laser_sound = None
 
         # Shield attributes

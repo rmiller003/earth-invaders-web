@@ -1,4 +1,3 @@
-print("DIAGNOSTIC_PRINT: game.py script started.")
 import pygame
 import random
 import traceback # Added import
@@ -24,7 +23,6 @@ FRENZY_SHOOT_PROBABILITY = 0.1
 
 class Game:
     def __init__(self, screen_width, screen_height):
-        print("DIAGNOSTIC_PRINT: Game.__init__ started.")
         self.screen_width = screen_width
         self.screen_height = screen_height
         # self.victory = False # Removed
@@ -67,28 +65,28 @@ class Game:
 
             # Explosion sound
             try:
-                self.explosion_sound = pygame.mixer.Sound("assets/Sounds/explosion.ogg")
+                self.explosion_sound = pygame.mixer.Sound("Sounds/explosion.ogg")
                 self.explosion_sound.set_volume(0.3)
             except (pygame.error, FileNotFoundError) as e:
-                print(f"Warning: Could not load 'assets/Sounds/explosion.ogg'. Error: {e}. Explosions will be silent.")
+                print(f"Warning: Could not load 'Sounds/explosion.ogg'. Error: {e}. Explosions will be silent.")
                 self.explosion_sound = None # Set to None if loading fails
 
             # Alien laser sound
             try:
-                self.alien_laser_sound = pygame.mixer.Sound("assets/Sounds/alien_laser.ogg")
+                self.alien_laser_sound = pygame.mixer.Sound("Sounds/alien_laser.ogg")
                 self.alien_laser_sound.set_volume(0.3)  # Adjust volume as needed
             except (pygame.error, FileNotFoundError) as e:
-                print(f"Warning: Could not load 'assets/Sounds/alien_laser.ogg'. Error: {e}. Alien lasers will be silent.")
+                print(f"Warning: Could not load 'Sounds/alien_laser.ogg'. Error: {e}. Alien lasers will be silent.")
                 self.alien_laser_sound = None
 
             self.alien_down_step = 10 # How much aliens move down when hitting an edge
 
             # Super Explosion sound
             try:
-                self.super_explosion_sound = pygame.mixer.Sound("assets/Sounds/epic_explosion.ogg")
+                self.super_explosion_sound = pygame.mixer.Sound("Sounds/epic_explosion.ogg")
                 self.super_explosion_sound.set_volume(0.5) # Adjust volume as needed
             except (pygame.error, FileNotFoundError) as e:
-                print(f"Warning: Could not load 'assets/Sounds/epic_explosion.ogg'. Error: {e}. Super explosions will use default sound or be silent.")
+                print(f"Warning: Could not load 'Sounds/epic_explosion.ogg'. Error: {e}. Super explosions will use default sound or be silent.")
                 self.super_explosion_sound = None # Fallback to None
 
             # Pre-load explosion images
@@ -98,22 +96,21 @@ class Game:
             self.explosion_placeholder_img.fill((255,255,0)) # Yellow
 
             try:
-                self.super_explosion_img = pygame.image.load("assets/Graphics/explosion.png").convert_alpha()
+                self.super_explosion_img = pygame.image.load("Graphics/explosion.png").convert_alpha()
             except (pygame.error, FileNotFoundError) as e:
-                print(f"Warning: Could not load 'assets/Graphics/explosion.png'. Error: {e}. Super explosions will use placeholder.")
+                print(f"Warning: Could not load 'Graphics/explosion.png'. Error: {e}. Super explosions will use placeholder.")
                 # self.super_explosion_img remains None or use placeholder
 
             try:
-                self.regular_explosion_img = pygame.image.load("assets/Graphics/explosion2.png").convert_alpha()
+                self.regular_explosion_img = pygame.image.load("Graphics/explosion2.png").convert_alpha()
             except (pygame.error, FileNotFoundError) as e:
-                print(f"Warning: Could not load 'assets/Graphics/explosion2.png'. Error: {e}. Regular explosions will use placeholder.")
+                print(f"Warning: Could not load 'Graphics/explosion2.png'. Error: {e}. Regular explosions will use placeholder.")
                 # self.regular_explosion_img remains None or use placeholder
 
         except Exception as e:
             print(traceback.format_exc())
         finally:
             pass
-        print("DIAGNOSTIC_PRINT: Game.__init__ finished.")
 
     def create_obstacles(self):
         obstacle_width = len(grid[0]) * 3
@@ -124,7 +121,7 @@ class Game:
             obstacle = Obstacle(offset_x, self.screen_height - 100)
             obstacles.append(obstacle)
         return obstacles
-
+    
     def create_aliens(self):
         for row in range(5):
             for column in range(11):
@@ -554,131 +551,3 @@ class Game:
                 # For now, let's assume Spaceship will have an activate_invincibility method or similar.
                 # For this subtask, we'll just add the spaceship.
                 # The plan step for Spaceship.py will handle making it invincible.
-
-# Main Game Execution Block (to be appended to game.py)
-
-if __name__ == '__main__': # Good practice, though PyScript runs it directly
-    print("DIAGNOSTIC_PRINT: Main execution block (if __name__ == '__main__') started.")
-
-    pygame.init()
-    print("DIAGNOSTIC_PRINT: pygame.init() called.")
-
-    # Screen dimensions - consider making these configurable or constants at the top
-    SCREEN_WIDTH = 800
-    SCREEN_HEIGHT = 600
-
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    print("DIAGNOSTIC_PRINT: pygame.display.set_mode() called.")
-    pygame.display.set_caption("Earth Invaders")
-
-    # Instantiate the game
-    game = Game(SCREEN_WIDTH, SCREEN_HEIGHT)
-    print("DIAGNOSTIC_PRINT: Game instance created.")
-
-    clock = pygame.time.Clock()
-    running = True
-    print("DIAGNOSTIC_PRINT: Entering main game loop...")
-
-    # Attempt to load a default font for score/lives/messages
-    try:
-        ui_font = pygame.font.Font(None, 36) # Default system font, size 36
-        game_over_font = pygame.font.Font(None, 74)
-    except Exception as e:
-        print(f"Warning: Could not load default font. UI text may not be visible. Error: {e}")
-        ui_font = None
-        game_over_font = None
-
-    while running:
-        print("DIAGNOSTIC_PRINT: Top of main game loop.")
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            # Add other event handling here if needed, e.g., passing events to game objects
-            # Example: game.handle_event(event)
-            # (if your Game class has such a method for specific key presses not handled by player)
-
-        # Game logic updates
-        if not game.game_over:
-            game.spaceship_group.update() # Handles player input and laser recharging
-            game.move_aliens()
-            game.alien_shoot()
-            # Note: aliens_group.update is called by move_aliens in your Game class structure
-            game.super_alien_group.update() # Handles super alien movement
-            game.handle_bomb_dropping()
-            game.bombs_group.update()
-            game.alien_lasers_group.update()
-            game.check_collisions()
-            game.check_hostile_projectile_collisions()
-            game.spawn_super_alien()
-            game.handle_spaceship_respawn()
-            game._check_and_activate_frenzy_mode()
-
-            if game.check_round_clear(): # If all aliens are cleared
-                # Potentially add a delay or message before resetting
-                game.reset_game(new_round_started=True)
-
-
-        game.explosions_group.update() # Update explosions regardless of game_over state
-
-        # Drawing
-        print("DIAGNOSTIC_PRINT: Before screen.fill().")
-        screen.fill((0, 0, 0))  # Black background
-
-        # Draw obstacles
-        for obstacle in game.obstacles:
-            obstacle.blocks_group.draw(screen)
-
-        # Draw spaceship and its lasers
-        if game.spaceship_group.sprite:
-            # Handle blinking during invincibility
-            if not (game.spaceship_group.sprite.invincible and not game.spaceship_group.sprite.blink_on):
-                game.spaceship_group.draw(screen)
-
-            # Draw shield aura if active
-            if game.spaceship_group.sprite.shield_active:
-                aura_surface = game.spaceship_group.sprite.shield_aura_surface
-                aura_rect = aura_surface.get_rect(center=game.spaceship_group.sprite.rect.center)
-                screen.blit(aura_surface, aura_rect)
-
-            game.spaceship_group.sprite.lasers_group.draw(screen)
-
-        # Draw aliens and their lasers
-        game.aliens_group.draw(screen)
-        game.alien_lasers_group.draw(screen)
-
-        # Draw super alien and its bombs
-        game.super_alien_group.draw(screen)
-        game.bombs_group.draw(screen)
-
-        # Draw explosions
-        game.explosions_group.draw(screen)
-
-        # Draw UI (score, lives) if font is available
-        if ui_font:
-            score_text_surface = ui_font.render(f"Score: {game.score}", True, (255, 255, 255))
-            lives_text_surface = ui_font.render(f"Lives: {game.lives}", True, (255, 255, 255))
-            level_text_surface = ui_font.render(f"Level: {game.current_level_number}", True, (255, 255, 255)) # Added level display
-
-            screen.blit(score_text_surface, (10, 10))
-            screen.blit(lives_text_surface, (SCREEN_WIDTH - lives_text_surface.get_width() - 10, 10))
-            screen.blit(level_text_surface, (SCREEN_WIDTH // 2 - level_text_surface.get_width() // 2, 10))
-
-
-        if game.game_over:
-            if game_over_font:
-                game_over_text_surface = game_over_font.render("GAME OVER", True, (255, 0, 0))
-                screen.blit(game_over_text_surface,
-                            (SCREEN_WIDTH // 2 - game_over_text_surface.get_width() // 2,
-                             SCREEN_HEIGHT // 2 - game_over_text_surface.get_height() // 2))
-            # Optionally, add a "Press R to Restart" message here
-            # And handle R key press in event loop to call game.reset_game(new_round_started=False)
-
-        pygame.display.flip()  # Update the full display
-        print("DIAGNOSTIC_PRINT: After pygame.display.flip().")
-        clock.tick(60)  # Cap FPS at 60
-
-    print("DIAGNOSTIC_PRINT: Exited main game loop.")
-    pygame.quit()
-    print("DIAGNOSTIC_PRINT: pygame.quit() called.")
-    # Note: In a PyScript environment, pygame.quit() might not be strictly necessary
-    # or behave the same way as it does in a desktop app, as the browser manages the page lifecycle.

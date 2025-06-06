@@ -11,7 +11,7 @@ class Alien(pygame.sprite.Sprite):
     def __init__(self, type, x, y): # Removed speed_modifier parameter
         super().__init__()
         self.type = type
-        path = f"assets/Graphics/alien_{type}.png"
+        path = f"Graphics/alien_{type}.png"
         try:
             self.image = pygame.image.load(path).convert_alpha()
         except (pygame.error, FileNotFoundError) as e:
@@ -41,3 +41,4 @@ class Alien(pygame.sprite.Sprite):
         laser_speed = ALIEN_LASER_SPEED # Set to constant as self.speed_modifier is removed
         laser_instance = laser.AlienLaser(self.rect.center, laser_speed, screen_height)
         return laser_instance
+

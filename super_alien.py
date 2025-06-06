@@ -12,7 +12,7 @@ class SuperAlien(pygame.sprite.Sprite):
         self.screen_width = screen_width
         self.screen_height = screen_height # May not be strictly needed for horizontal movement but good to have
 
-        self.image = pygame.image.load("assets/Graphics/mystery.png").convert_alpha()
+        self.image = pygame.image.load("Graphics/mystery.png").convert_alpha()
 
         # Determine spawn side (left or right)
         self.spawn_side = random.choice(["left", "right"])
