@@ -1,3 +1,4 @@
+print("DIAGNOSTIC_PRINT: game.py script started.")
 import pygame
 import random
 import traceback # Added import
@@ -23,6 +24,7 @@ FRENZY_SHOOT_PROBABILITY = 0.1
 
 class Game:
     def __init__(self, screen_width, screen_height):
+        print("DIAGNOSTIC_PRINT: Game.__init__ started.")
         self.screen_width = screen_width
         self.screen_height = screen_height
         # self.victory = False # Removed
@@ -111,6 +113,7 @@ class Game:
             print(traceback.format_exc())
         finally:
             pass
+        print("DIAGNOSTIC_PRINT: Game.__init__ finished.")
 
     def create_obstacles(self):
         obstacle_width = len(grid[0]) * 3
@@ -555,20 +558,26 @@ class Game:
 # Main Game Execution Block (to be appended to game.py)
 
 if __name__ == '__main__': # Good practice, though PyScript runs it directly
+    print("DIAGNOSTIC_PRINT: Main execution block (if __name__ == '__main__') started.")
+
     pygame.init()
+    print("DIAGNOSTIC_PRINT: pygame.init() called.")
 
     # Screen dimensions - consider making these configurable or constants at the top
     SCREEN_WIDTH = 800
     SCREEN_HEIGHT = 600
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    print("DIAGNOSTIC_PRINT: pygame.display.set_mode() called.")
     pygame.display.set_caption("Earth Invaders")
 
     # Instantiate the game
     game = Game(SCREEN_WIDTH, SCREEN_HEIGHT)
+    print("DIAGNOSTIC_PRINT: Game instance created.")
 
     clock = pygame.time.Clock()
     running = True
+    print("DIAGNOSTIC_PRINT: Entering main game loop...")
 
     # Attempt to load a default font for score/lives/messages
     try:
@@ -580,6 +589,7 @@ if __name__ == '__main__': # Good practice, though PyScript runs it directly
         game_over_font = None
 
     while running:
+        print("DIAGNOSTIC_PRINT: Top of main game loop.")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -611,6 +621,7 @@ if __name__ == '__main__': # Good practice, though PyScript runs it directly
         game.explosions_group.update() # Update explosions regardless of game_over state
 
         # Drawing
+        print("DIAGNOSTIC_PRINT: Before screen.fill().")
         screen.fill((0, 0, 0))  # Black background
 
         # Draw obstacles
@@ -663,8 +674,11 @@ if __name__ == '__main__': # Good practice, though PyScript runs it directly
             # And handle R key press in event loop to call game.reset_game(new_round_started=False)
 
         pygame.display.flip()  # Update the full display
+        print("DIAGNOSTIC_PRINT: After pygame.display.flip().")
         clock.tick(60)  # Cap FPS at 60
 
+    print("DIAGNOSTIC_PRINT: Exited main game loop.")
     pygame.quit()
+    print("DIAGNOSTIC_PRINT: pygame.quit() called.")
     # Note: In a PyScript environment, pygame.quit() might not be strictly necessary
     # or behave the same way as it does in a desktop app, as the browser manages the page lifecycle.
