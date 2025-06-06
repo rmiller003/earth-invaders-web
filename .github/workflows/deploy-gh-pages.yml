@@ -1,0 +1,40 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Or your default branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' # Or the version your game uses
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pygame pygbag
+
+      - name: Build game
+        run: |
+          # The game files are now in the EarthInvaders subdirectory
+          python -m pygbag --build EarthInvaders
+          # If --build implies placing output in EarthInvaders/build/web, that's fine.
+          # Otherwise, specify: python -m pygbag EarthInvaders --output EarthInvaders/build/web (adjust if needed)
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./EarthInvaders/build/web
+          # Optional: if your GitHub Pages site is a project site (not a user/org site)
+          # and you want it at USERNAME.github.io/REPONAME/, ensure the base URL is correct.
+          # Pygbag usually handles this well by using relative paths.
+          # cname: your.custom.domain.com # If you have a custom domain
