@@ -5,6 +5,7 @@
 import pygame
 import sys
 import random # Ensure random is imported at the top of main.py
+import asyncio # Import asyncio
 from game import Game
 
 
@@ -79,22 +80,23 @@ current_state = MAIN_MENU
 
 stars = initialize_stars(SCREEN_WIDTH, SCREEN_HEIGHT, NUM_STARS) # Add this line
 
-while True:
-    #Checking for events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+async def main(): # Define async main function
+    global current_state, game # Ensure global variables are accessible if modified
 
-        # Handle pause toggle if P is pressed
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_p:
-                if current_state == PLAYING:
+    running = True
+    while running:
+        #Checking for events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False # Set running to False to exit loop
+
+            # Handle pause toggle if P is pressed
+            if event.type == pygame.KEYDOWN: # This line was unindented
+                if event.key == pygame.K_p:
+                    if current_state == PLAYING:
                     current_state = PAUSED
                 elif current_state == PAUSED:
-                    current_state = PLAYING
-
-            # Other keydown events based on state
+                    current_state =            # Other keydown events based on state
             if current_state == MAIN_MENU:
                 if event.key == pygame.K_RETURN:
                     current_state = PLAYING
@@ -277,8 +279,11 @@ while True:
         resume_rect = resume_surface.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 40)) # Position below "PAUSED"
         screen.blit(resume_surface, resume_rect)
 
-    pygame.display.update()
-    clock.tick(60)
+        pygame.display.update() # Moved into the loop
+        await asyncio.sleep(0) # Moved into the loop
 
+    pygame.quit()
+    sys.exit()
 
-##New Merge to Master###
+if __name__ == "__main__":
+    asyncio.run(main())
